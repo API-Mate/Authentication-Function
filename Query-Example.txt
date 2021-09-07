@@ -1,0 +1,17 @@
+{
+   "action":"register",
+   "data":{
+      "fname":"Ali",
+      "lname":"Tabesh",
+      "email":"hi@alitabesh.ir",
+      "password":"test01"
+   }
+}
+
+{
+   "action":"login",
+   "data":{
+      "email":"hi@alitabesh.ir",
+      "password":"test01"
+   }
+}
