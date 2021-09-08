@@ -6,22 +6,44 @@ const axios = require("axios");
 let res = { status: 400, message: "error occured" };
 
 module.exports = async (event, context) => {
-  const action = event.body.action;
-  const data = event.body.data;
-  let ret;
+  try {
+    if (event.method === 'OPTIONS') {
+      var headers = {};
+      headers["Access-Control-Allow-Origin"] = "http://localhost:3000";
+      headers["Access-Control-Allow-Methods"] = "POST, GET, PUT, OPTIONS";
+      headers["Access-Control-Allow-Credentials"] = false;
+      headers["Access-Control-Max-Age"] = '86400'; // 24 hours
+      headers["Access-Control-Allow-Headers"] = "X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept";
+      return context
+        .status(200)
+        .headers(headers)
+        .succeed();
+    } else {
+      const action = event.body.action;
+      const data = event.body.data;
+      let ret;
 
-  if (action == "login")
-    ret = await login(data);
-  else
-    ret = await register(data);
+      if (action == "login")
+        ret = await login(data);
+      else
+        ret = await register(data);
 
-  return context
-    .status(ret.status)
-    .headers({
-      "Content-type": "application/json; charset=utf-8"
-    })
-    .succeed(ret.message);
-
+      return context
+        .status(ret.status)
+        .headers({
+          "Content-type": "application/json; charset=utf-8",
+          "Access-Control-Allow-Origin": "http://localhost:3000"
+        })
+        .succeed(ret.message);
+    }
+  } catch (error) {
+    return context
+      .status(500)
+      .headers({
+        "Access-Control-Allow-Origin": "http://localhost:3000"
+      })
+      .succeed(error.toString());
+  }
 }
 
 async function register(data) {
