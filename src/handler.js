@@ -9,7 +9,6 @@ module.exports = async (event, context) => {
   const action = event.body.action;
   const data = event.body.data;
   let ret;
-  console.log(event.body);
 
   if (action == "login")
     ret = await login(data);
@@ -26,7 +25,6 @@ module.exports = async (event, context) => {
 }
 
 async function register(data) {
-  //try {
   // Get user input
   const { fname, lname, email, password } = data;
 
@@ -67,8 +65,6 @@ async function register(data) {
     query: "insertOne"
   }).then(response => {
     const user = response.data;
-    console.log(user);
-
     const token = jwt.sign(
       { user_id: user._id, email },
       process.env.JWT_TOKEN_KEY,
@@ -92,7 +88,6 @@ async function register(data) {
 }
 
 async function login(data) {
-  //try {
   // Get user input
   const { email, password } = data;
   // Validate user input
@@ -101,31 +96,36 @@ async function login(data) {
     return res;
   }
   // Validate if user exist in our database
-  axios.post('http://gateway.openfaas:8080/function/data-function',
+  return await axios.post('http://gateway.openfaas:8080/function/data-function',
     {
       table: "Users",
       record: { email },
       query: "findOne"
-    }).then(function (requser) {
-      const user = requser.data;
+    }).then(async function (requser) {
+      let user = requser.data;
 
-      if (requser.status == 200 && (await bcrypt.compare(password, user.password))) {
+      if (requser.status == 200) {
         // Create token
-        const token = jwt.sign(
-          { user_id: user._id, email },
-          process.env.JWT_TOKEN_KEY,
-          {
-            expiresIn: "8h",
-          }
-        );
-
-        // save user token
-        user.token = token;
-        user.password = "";
-        res.status = 200;
-        res.message = user;
-        return res;
+        var correctPassword = await bcrypt.compare(password, user.password);
+        if (correctPassword) {
+          const token = jwt.sign(
+            { user_id: user._id, email },
+            process.env.JWT_TOKEN_KEY,
+            {
+              expiresIn: "8h",
+            }
+          );
+          // save user token
+          user.token = token;
+          user.password = null;
+          res.status = 200;
+          res.message = user;
+          return res;
+        }
       }
+      res.status = 404;
+      res.message = "Invalid Credentials";
+      return res;
     }).catch(function (error) {
       res.status = 404;
       res.message = "Invalid Credentials";

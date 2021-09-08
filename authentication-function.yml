@@ -6,6 +6,6 @@ functions:
   authentication-function:
     lang: node14
     handler: ./src
-    image: apimate/authentication-function:testing0.8
+    image: apimate/authentication-function:1.0
     environment:
       JWT_TOKEN_KEY: apimate-jwt-tokenkey-usPFBZER4mJ9vhWabdQ0
