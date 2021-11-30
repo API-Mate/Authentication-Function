@@ -13,7 +13,8 @@ module.exports = async (event, context) => {
       headers["Access-Control-Allow-Methods"] = "POST, GET, PUT, OPTIONS";
       headers["Access-Control-Allow-Credentials"] = false;
       headers["Access-Control-Max-Age"] = '86400'; // 24 hours
-      headers["Access-Control-Allow-Headers"] = "X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept";
+      headers["Access-Control-Allow-Headers"] = "*";
+      
       return context
         .status(200)
         .headers(headers)

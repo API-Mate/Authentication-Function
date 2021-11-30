@@ -6,6 +6,10 @@ functions:
   authentication-function:
     lang: node14
     handler: ./src
-    image: apimate/authentication-function:1.1.0
+    image: apimate/authentication-function:1.1.2
+    labels:
+      com.openfaas.scale.min: 1
+      com.openfaas.scale.max: 20
+      com.openfaas.scale.factor: 20
     environment:
       JWT_TOKEN_KEY: apimate-jwt-tokenkey-usPFBZER4mJ9vhWabdQ0
